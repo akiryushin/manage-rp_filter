@@ -26,6 +26,7 @@ fi
 # Change parameter state
 for INTERFACE_NAME in ${INTERFACES[@]}
 do
+    log 'Test message'
     sysctl -a --ignore |& grep \\${INTERFACE_NAME}.rp_filter &> /dev/null
     if [[ $? = 0 ]]
     then
