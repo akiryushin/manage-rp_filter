@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -oex pipefail
+
 CONFIG_FILE='/etc/sysctl.d/90-disable-rp_filter.conf'
 INTERFACES=(all eth0)
 readonly STATUS='0'
