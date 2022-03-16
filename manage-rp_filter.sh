@@ -30,7 +30,7 @@ for INTERFACE_NAME in ${INTERFACES[@]}
 do
     log 'Test message'
     sysctl -a --ignore |& grep \\${INTERFACE_NAME}.rp_filter &> /dev/null
-    log "$?"
+    log 'Test message 2'
     if [[ $? = 0 ]]
     then
         NET_CONFIG="$(sysctl -a --ignore |& grep \\${INTERFACE_NAME}.rp_filter | awk '{ print $1 }')"
