@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONFIG_FILE='/etc/sysctl.d/90-disable-rp_filter.conf'
-INTERFACES=(all eth0)
+INTERFACES=(all eth0 eth1 eth2)
 readonly STATUS='0'
 
 log () {
@@ -11,7 +11,7 @@ log () {
 
 getstatus () {
     local INTERFACE_NAME="${1}"
-    /sbin/sysctl -a --ignore |& grep ${INTERFACE_NAME}.rp_filter | awk '{ print $3 }'
+    sysctl -a --ignore |& grep ${INTERFACE_NAME}.rp_filter | awk '{ print $3 }'
 }
 
 log 'Starting change status of rp_filter'
@@ -26,12 +26,13 @@ fi
 # Change parameter state
 for INTERFACE_NAME in ${INTERFACES[@]}
 do
-    /sbin/sysctl -a --ignore |& grep ${INTERFACE_NAME}.rp_filter 2&>/dev/null
+    log "Interface: $INTERFACE_NAME"
+    sysctl -a --ignore |& grep ${INTERFACE_NAME}.rp_filter &>/dev/null
     if [[ $? = 0 ]]
     then
-        NET_CONFIG="$(/sbin/sysctl -a --ignore |& grep \\${INTERFACE_NAME}.rp_filter | awk '{ print $1 }')"
+        NET_CONFIG="$(sysctl -a --ignore |& grep \\${INTERFACE_NAME}.rp_filter | awk '{ print $1 }')"
         log "Print current state of ${INTERFACE_NAME}.rp_filter: $(getstatus ${INTERFACE_NAME})"
-        /sbin/sysctl -w "${NET_CONFIG}=${STATUS}" 2&>/dev/null
+        sysctl -w "${NET_CONFIG}=${STATUS}" &>/dev/null
         echo "${NET_CONFIG}=${STATUS}" >> ${CONFIG_FILE}
         log "Print new state of ${INTERFACE_NAME}.rp_filter after changes: $(getstatus ${INTERFACE_NAME})"
     fi
